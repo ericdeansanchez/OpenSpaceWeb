@@ -6,6 +6,10 @@ import IconButton from '@material-ui/core/IconButton';
 import HomeIcon from '@material-ui/icons/Home';
 import ListIcon from '@material-ui/icons/List';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import App from '../App';
+import SpaceView from './SpaceView';
+
 
 const styles = theme => ({
     button: {
