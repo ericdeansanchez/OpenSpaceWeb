@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>OpenSpace</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <link href="style.css" rel="stylesheet">
+    <link rel="shortcut icon" href="./favicon.ico">
+</head>
+
+<body>
+    <div class="center">
+        <div align="center" class="Contained">
+            <div align="center" class="Block">
+                <div align="center" id="map">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var map;
+        var infowindow;
+
+        const lat = 37.87156239999999;
+        const lng = -122.2581763;
+
+        function initMap() {
+            var coords = { lat: lat, lng: lng };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: coords,
+                zoom: 17
+            });
+
+            infowindow = new google.maps.InfoWindow();
+            var service = new google.maps.places.PlacesService(map);
+            service.nearbySearch({
+                location: coords,
+                radius: 500,
+                type: ['library']
+            }, callback);
+        }
+
+
+        let volumes = [160, 134, 0, 4, 0, 0, 37, 24, 32, 76, 39, 28, 0, 0, 23, 0, 0, 87, 8];
+        function callback(results, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                for (var i = 0; i < results.length; i++) {
+                    createMarker(results[i], volumes[i]);
+                }
+            }
+        }
+
+        function checkClosed(status, volume) {
+            return (status === 'Open' ? volume : 0);
+        }
+
+        function createMarker(place, volume) {
+            var placeLoc = place.geometry.location;
+            var marker = new google.maps.Marker({
+                map: map,
+                position: place.geometry.location
+            });
+
+            let status = 'Closed';
+            if (place.opening_hours.open_now) {
+                status = 'Open';
+            }
+
+            let contentString =
+                '<div>Space: ' + place.name +
+                '<div>Status: ' + status +
+                '</div>Occupancy: ' + checkClosed(status, volume) + '</div>';
+
+            google.maps.event.addListener(marker, 'click', function () {
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString
+                });
+                infowindow.open(map, this);
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHk6KnouKAKNFbTnisDii1GBjtOnyCHuo&libraries=places&callback=initMap"
+        async defer></script>
+</body>
+
+</html>
